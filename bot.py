@@ -21,6 +21,8 @@ def keyfunc(tup):
     key, d = tup
     return d["pairing_id"]
 
+
+# for test
 @app.route("/test")
 def test():
     r = requests.get(
