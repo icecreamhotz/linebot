@@ -5,8 +5,6 @@ from linebot.models import (MessageEvent, TextMessage, TextSendMessage,)
 from flask.logging import create_logger
 import requests
 import json
-import datetime, pytz
-tz = pytz.timezone('Asia/Bangkok')
 
 app = Flask(__name__)
 LOG = create_logger(app)
@@ -18,32 +16,10 @@ handler = WebhookHandler('32e5d95ef00636497e243caae6e97f2f')
 def hello():
     return "Hello World"
 
-def date_now():
-    now1 = datetime.datetime.now(tz)
-    month_name = 'x มกราคม กุมภาพันธ์ มีนาคม เมษายน พฤษภาคม มิถุนายน กรกฎาคม สิงหาคม กันยายน ตุลาคม พฤศจิกายน ธันวาคม'.split()[now1.month]
-    thai_year = now1.year + 543
-    time_str = now1.strftime('%H:%M:%S')
-    return "%d %s %d %s"%(now1.day, month_name, thai_year, time_str) # 30 ตุลาคม 2560 20:45:30
-
 # for test
 @app.route("/test")
 def test():
-    r = requests.get(
-      'https://bx.in.th/api/')
-    data = r.json()
-    command = "acn"
-    today = date_now()
-    message = "ข้อมูลปัจจุบัน ณ เวลา " + today + "\n"
-    if command == "tcn":
-        filterData = [v for v in data.values() if "THB" in v.values()]
-        for value in sorted(filterData, key = lambda name: name['pairing_id']):
-            message += str(value['pairing_id']) + ": " + value['primary_currency'] + " to " + value['secondary_currency'] + " = " + str(value['last_price']) + "\n"
-    elif command == "acn":
-        for value in sorted(data.values(), key = lambda name: name['pairing_id']):
-            message += str(value['pairing_id']) + ": " + value['primary_currency'] + " to " + value['secondary_currency'] + " = " + str(value['last_price']) + "\n"
-    # for key, value in sort_data:
-    # return jsonify(r.json())
-    print(message)
+
     return "ok"
 
 @app.route("/webhook", methods=['POST'])
@@ -66,25 +42,29 @@ def webhook():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    r = requests.get(
-      'https://bx.in.th/api/')
-    data = r.json()
     command = event.message.text
-    today = date_now()
-    message = "ข้อมูลปัจจุบัน ณ เวลา " + today + "\n"
-    if command == "tcn":
-        filterData = [v for v in data.values() if "THB" in v.values()]
-        for value in sorted(filterData, key = lambda name: name['pairing_id']):
-            message += str(value['pairing_id']) + ": " + value['primary_currency'] + " to " + value['secondary_currency'] + " = " + str(value['last_price']) + "\n"
-    elif command == "acn":
-        for value in sorted(data.values(), key = lambda name: name['pairing_id']):
-            message += str(value['pairing_id']) + ": " + value['primary_currency'] + " to " + value['secondary_currency'] + " = " + str(value['last_price']) + "\n"
-    elif command == "รักเค้าไหม":
-        message = "รักดิมากด้วย <3"
-    elif command == "ตอแหลไหม":
-        message = "มากที่สุดเหมือนกัน :)"
+    r = requests.get(
+      'https://superheroapi.com/api/2531207266924281/search/' + command)
+    data = r.json()
+    message = ""
+    if data['response'] == "success":
+        for item in data['results']:
+            message += "ชื่อในวงการ: " + item['name']
+            message += "\nชื่อจริง: " + item['biography']['full-name']
+            message += "\nเพศ: " + item['appearance']['gender']
+            message += "\nส่วนสูง: " + item['appearance']['height'][1]
+            message += "\nน้ำหนัก: " + item['appearance']['weight'][1]
+            message += "\nสถานที่เกิด: " + item['biography']['place-of-birth']
+            message += "\nเผ่าพันธ์: " + item['appearance']['race']
+            message += "\nความฉลาด: " + item['powerstats']['intelligence']
+            message += "\nความแข็งแรง: " + item['powerstats']['strength']
+            message += "\nความไว: " + item['powerstats']['speed']
+            message += "\nความทนทาน: " + item['powerstats']['durability']
+            message += "\nพลังการต่อสู้: " + item['powerstats']['power']
+            message += "\nทักษะการต่อสู้: " + item['powerstats']['combat']
+            message += "\nสื่อที่ตีพิมพ์: " + item['biography']['publisher']
     else:
-        message = "ไม่มีคำสั่งที่คุณพิมพ์มาตอนนี้เรามีแค่\n1.acn (all crypto now)\n2.tcn(thai crypto now)"
+        message = "ไม่พบข้อมูลของตัวละคร " + command + "\n*หมายเหตุ เว้นวรรคมีผลกับการค้นหาเช่น captain america, iron man ตัวเล็กตัวใหญ่ไม่มีผล"
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=message))
