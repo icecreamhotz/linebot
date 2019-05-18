@@ -44,7 +44,7 @@ def webhook():
 def handle_message(event):
     command = event.message.text
     r = requests.get(
-      'https://superheroapi.com/api/2531207266924281/search/' + command)
+      'https://superheroapi.com/api/access_token/search/' + command)
     data = r.json()
     message = ""
     if data['response'] == "success":
