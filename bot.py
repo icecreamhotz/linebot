@@ -85,7 +85,7 @@ def handle_message(event):
     elif command == "ตอแหลไหม":
         message = "มากที่สุดเหมือนกัน :)"
     else:
-        message = "ไม่มีคำสั่งที่คุณพิมพ์มาตอนนี้เรามีแค่\n1. acn (all crypto now)\n2.tcn(thai crypto now)"
+        message = "ไม่มีคำสั่งที่คุณพิมพ์มาตอนนี้เรามีแค่\n1.acn (all crypto now)\n2.tcn(thai crypto now)"
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=message))
