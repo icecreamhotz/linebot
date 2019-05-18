@@ -9,8 +9,8 @@ import json
 app = Flask(__name__)
 LOG = create_logger(app)
 
-line_bot_api = LineBotApi('zg8vZk9ia6rij/KY90Lh40+3TCbqujTeujhNXrGXy/LH6epuuF27rdV6HSLr6F8vJmUFds1LkXD9OS8ctQn23UpiaCpKf/SLVLQSicjljBIvTokhv17eCNBrFF9pbYoZNsT/Xo/a3WaA6poP1SIt6gdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('32e5d95ef00636497e243caae6e97f2f')
+line_bot_api = LineBotApi('THIS IS A SECRET')
+handler = WebhookHandler('THIS IS A SECRET')
 
 @app.route("/")
 def hello():
