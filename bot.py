@@ -5,7 +5,7 @@ from linebot.models import (MessageEvent, TextMessage, TextSendMessage,)
 from flask.logging import create_logger
 import requests
 import json
-from datetime import date
+from datetime import datetime
 
 app = Flask(__name__)
 LOG = create_logger(app)
@@ -68,9 +68,11 @@ def handle_message(event):
       'https://bx.in.th/api/')
     data = r.json()
     command = event.message.text
-    today = date.today()
+    today = datetime.now()
+    hourMinuteSecond = today.strftime('%H:%M:%S')
     month = today.month < 10 and "0" + str(today.month) or str(today.month)
-    message = "ข้อมูลปัจจุบัน ณ เวลา " + str(today.day) + "/" + month + "/" + str(today.year) + "\n"
+    year = today.year + 543
+    message = "ข้อมูลปัจจุบัน ณ เวลา " + str(today.day) + "/" + month + "/" + str(year) + " " + hourMinuteSecond + "\n"
     if command == "tcn":
         filterData = [v for v in data.values() if "THB" in v.values()]
         for value in sorted(filterData, key = lambda name: name['pairing_id']):
@@ -79,9 +81,9 @@ def handle_message(event):
         for value in sorted(data.values(), key = lambda name: name['pairing_id']):
             message += str(value['pairing_id']) + ": " + value['primary_currency'] + " to " + value['secondary_currency'] + " = " + str(value['last_price']) + "\n"
     elif command == "รักเค้าไหม":
-        message += "รักดิมากด้วย <3"
+        message = "รักดิมากด้วย <3"
     elif command == "ตอแหลไหม":
-        message += "มากที่สุดเหมือนกัน :)"
+        message = "มากที่สุดเหมือนกัน :)"
     else:
         message = "ไม่มีคำสั่งที่คุณพิมพ์มาตอนนี้เรามีแค่\n1. acn (all crypto now)\n2.tcn(thai crypto now)"
     line_bot_api.reply_message(
