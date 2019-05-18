@@ -63,6 +63,7 @@ def handle_message(event):
             message += "\nพลังการต่อสู้: " + item['powerstats']['power']
             message += "\nทักษะการต่อสู้: " + item['powerstats']['combat']
             message += "\nสื่อที่ตีพิมพ์: " + item['biography']['publisher']
+            message += "\n-----------------------\n"
     else:
         message = "ไม่พบข้อมูลของตัวละคร " + command + "\n*หมายเหตุ เว้นวรรคมีผลกับการค้นหาเช่น captain america, iron man ตัวเล็กตัวใหญ่ไม่มีผล"
     line_bot_api.reply_message(
