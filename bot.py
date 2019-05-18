@@ -5,7 +5,8 @@ from linebot.models import (MessageEvent, TextMessage, TextSendMessage,)
 from flask.logging import create_logger
 import requests
 import json
-from datetime import datetime
+import datetime, pytz
+tz = pytz.timezone('Asia/Bangkok')
 
 app = Flask(__name__)
 LOG = create_logger(app)
@@ -17,10 +18,12 @@ handler = WebhookHandler('32e5d95ef00636497e243caae6e97f2f')
 def hello():
     return "Hello World"
 
-def keyfunc(tup):
-    key, d = tup
-    return d["pairing_id"]
-
+def date_now():
+    now1 = datetime.datetime.now(tz)
+    month_name = 'x มกราคม กุมภาพันธ์ มีนาคม เมษายน พฤษภาคม มิถุนายน กรกฎาคม สิงหาคม กันยายน ตุลาคม พฤศจิกายน ธันวาคม'.split()[now1.month]
+    thai_year = now1.year + 543
+    time_str = now1.strftime('%H:%M:%S')
+    return "%d %s %d %s"%(now1.day, month_name, thai_year, time_str) # 30 ตุลาคม 2560 20:45:30
 
 # for test
 @app.route("/test")
@@ -29,9 +32,8 @@ def test():
       'https://bx.in.th/api/')
     data = r.json()
     command = "acn"
-    today = date.today()
-    month = today.month < 10 and "0" + str(today.month) or str(today.month)
-    message = "ข้อมูลปัจจุบัน ณ เวลา " + str(today.day) + "/" + month + "/" + str(today.year) + "\n"
+    today = date_now()
+    message = "ข้อมูลปัจจุบัน ณ เวลา " + today + "\n"
     if command == "tcn":
         filterData = [v for v in data.values() if "THB" in v.values()]
         for value in sorted(filterData, key = lambda name: name['pairing_id']):
@@ -68,11 +70,8 @@ def handle_message(event):
       'https://bx.in.th/api/')
     data = r.json()
     command = event.message.text
-    today = datetime.now()
-    hourMinuteSecond = today.strftime('%H:%M:%S')
-    month = today.month < 10 and "0" + str(today.month) or str(today.month)
-    year = today.year + 543
-    message = "ข้อมูลปัจจุบัน ณ เวลา " + str(today.day) + "/" + month + "/" + str(year) + " " + hourMinuteSecond + "\n"
+    today = date_now()
+    message = "ข้อมูลปัจจุบัน ณ เวลา " + today + "\n"
     if command == "tcn":
         filterData = [v for v in data.values() if "THB" in v.values()]
         for value in sorted(filterData, key = lambda name: name['pairing_id']):
