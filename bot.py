@@ -78,6 +78,10 @@ def handle_message(event):
     elif command == "acn":
         for value in sorted(data.values(), key = lambda name: name['pairing_id']):
             message += str(value['pairing_id']) + ": " + value['primary_currency'] + " to " + value['secondary_currency'] + " = " + str(value['last_price']) + "\n"
+    elif command == "รักเค้าไหม"
+        message += "รักดิมากด้วย <3"
+    elif command == "ตอแหลไหม"
+        message += "มากที่สุดเหมือนกัน :)"
     else:
         message = "ไม่มีคำสั่งที่คุณพิมพ์มาตอนนี้เรามีแค่\n1. acn (all crypto now)\n2.tcn(thai crypto now)"
     line_bot_api.reply_message(
